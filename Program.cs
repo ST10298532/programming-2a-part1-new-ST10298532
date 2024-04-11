@@ -65,10 +65,10 @@ namespace RecipeApp
 
     class Recipe
     {
-        private string[] ingredients;
-        private double[] quantities;
-        private string[] units;
-        private string[] steps;
+        private string[]? ingredients;
+        private double[]? quantities;
+        private string[]? units;
+        private string[]? steps;
 
         // Method to enter recipe details
         public void EnterRecipeDetails()
