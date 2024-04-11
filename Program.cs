@@ -11,6 +11,7 @@ namespace RecipeApp
 
             while (true)
             {
+                // Display menu options
                 Console.WriteLine("1. Enter recipe details");
                 Console.WriteLine("2. Display recipe");
                 Console.WriteLine("3. Scale the recipe");
@@ -69,15 +70,18 @@ namespace RecipeApp
         private string[] units;
         private string[] steps;
 
+        // Method to enter recipe details
         public void EnterRecipeDetails()
         {
             Console.Write("Enter the number of ingredients: ");
             int numIngredients = Convert.ToInt32(Console.ReadLine());
 
+            // Allocate arrays to store ingredient details
             ingredients = new string[numIngredients];
             quantities = new double[numIngredients];
             units = new string[numIngredients];
 
+            // Prompt the user to enter ingredient details and store them in the arrays
             for (int i = 0; i < numIngredients; i++)
             {
                 Console.Write("Enter the name of ingredient {0}: ", i + 1);
@@ -93,8 +97,10 @@ namespace RecipeApp
             Console.Write("Enter the number of steps: ");
             int numSteps = Convert.ToInt32(Console.ReadLine());
 
+             // Allocate an array to store recipe steps 
             steps = new string[numSteps];
 
+            // Prompt the user to enter recipe steps and store them in the array
             for (int i = 0; i < numSteps; i++)
             {
                 Console.Write("Enter step {0}: ", i + 1);
@@ -102,10 +108,12 @@ namespace RecipeApp
             }
         }
 
+        // Method to display the recipe
         public void DisplayRecipe()
         {
             Console.WriteLine("Recipe:");
 
+            // Display ingredient details
             for (int i = 0; i < ingredients.Length; i++)
             {
                 Console.WriteLine("{0} {1} of {2}", quantities[i], units[i], ingredients[i]);
@@ -113,28 +121,32 @@ namespace RecipeApp
 
             Console.WriteLine();
 
+            // Display recipe steps
             for (int i = 0; i < steps.Length; i++)
             {
                 Console.WriteLine("Step {0}: {1}", i + 1, steps[i]);
             }
         }
-
+        
+        // Method to scale the recipe by a given scaling factor
         public void ScaleRecipe(double scalingFactor)
         {
+             // Multiply each quantity by the scaling factor
             for (int i = 0; i < quantities.Length; i++)
             {
                 quantities[i] *= scalingFactor;
             }
         }
-
+        // Method to reset the quantities to their original values
         public void ResetQuantities()
         {
             // Reset quantities to their original values
             // You would need to store the original quantities in a separate array or list to accomplish this
         }
-
+        // Method to clear all the recipe data
         public void ClearData()
         {
+            // Clear all recipe data by setting the arrays to null
             ingredients = null;
             quantities = null;
             units = null;
