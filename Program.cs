@@ -4,6 +4,7 @@ namespace RecipeApp
 {
     class Program
     {
+        // Main function - entry point of the program
         static void Main(string[] args)
         {
             Recipe recipe = new Recipe();
