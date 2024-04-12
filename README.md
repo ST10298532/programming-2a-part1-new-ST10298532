@@ -36,7 +36,7 @@ Follow the on-screen prompts to select an option and provide the required inputs
 Contributions to the Recipe App are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
 ## License
-The Recipe App is open source and available under the MIT License.
+The Recipe App is open source and available under the [MIT License](https://opensource.org/license/MIT).
 
 ## Acknowledgments
 The Recipe App was developed using C# and .NET Core. It utilizes basic console input/output and demonstrates fundamental programming concepts such as arrays, loops, and switch statements.
