@@ -11,14 +11,14 @@ To run the Recipe App, you need to have the following installed on your system:
 
 ### Running the Application
 1. Clone this [Repository](https://github.com/ST10298532/programming-2a-part1-new-ST10298532) to your local machine or download the source code as a ZIP file.
-2 Open a command prompt or terminal and navigate to the project directory.
+2. Open a command prompt or terminal and navigate to the project directory.
 3. Run the following command to build the application:
 dotnet build
 
 4. Run the following command to start the application
 dotnet run
 
-5. The application will display a menu with various options. Follow the prompts to interact with the application.
+7. The application will display a menu with various options. Follow the prompts to interact with the application.
 
 ## Usage
 Once the application is running, you can use the following options to manage recipe details:
