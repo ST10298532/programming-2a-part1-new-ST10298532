@@ -68,7 +68,7 @@ namespace RecipeApp
         private double[]? quantities;
         private string[]? units;
         private string[]? steps;
-
+        private double[]? originalQuantities;
 
         public void EnterRecipeDetails()
         {
@@ -104,6 +104,9 @@ namespace RecipeApp
                 Console.Write("Enter step {0}: ", i + 1);
                 steps[i] = Console.ReadLine()!;
             }
+
+           originalQuantities = new double[quantities.Length];
+            Array.Copy(quantities, originalQuantities, quantities.Length);
         }
 
         public void DisplayRecipe()
@@ -134,18 +137,13 @@ namespace RecipeApp
         public void ResetQuantities()
         {
             // Reset quantities to their original values
-
-
-            // Store the original quantities in a separate array
-            double[] originalQuantities = new double[quantities!.Length];
-            Array.Copy(quantities, originalQuantities, quantities.Length);
-
-            // Reset the quantities to the original values
-            for (int i = 0; i < quantities.Length; i++)
+            if (quantities != null && originalQuantities != null && quantities.Length == originalQuantities.Length)
             {
-                quantities[i] = originalQuantities[i];
+                for (int i = 0; i < quantities.Length; i++)
+                {
+                    quantities[i] = originalQuantities[i];
+                }
             }
-
         }
 
         public void ClearData()
