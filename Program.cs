@@ -181,11 +181,26 @@ namespace RecipeApp
         // Method to clear all recipe data
         public void ClearData()
         {
-            recipeName = null;
-            ingredients = null;
-            quantities = null;
-            units = null;
-            steps = null;
+            // Prompt the user for confirmation before clearing data
+            Console.WriteLine("\x1b[93mAre you sure you want to clear all recipe data? (y/n)\x1b[0m");
+            string confirmation = Console.ReadLine()?.ToLower();
+        
+            if (confirmation == "y")
+            {
+                recipeName = null;
+                ingredients = null;
+                quantities = null;
+                units = null;
+                steps = null;
+                Console.WriteLine("\x1b[92mAll data cleared successfully!\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine("\x1b[92mData clearing cancelled.\x1b[0m");
+            }
         }
     }
 }
+
+    
+
