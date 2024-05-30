@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace RecipeApp
 {
@@ -46,12 +47,25 @@ namespace RecipeApp
                         else
                         {
                             Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
+                            Console.WriteLine("\x1b[93m0. Display recipes in alphabetical order\x1b[0m");
                             for (int i = 0; i < recipes.Count; i++)
                             {
                                 Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
                             }
                             Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
                             int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                            if (recipeIndex == -1)
+                            {
+                                SortRecipes(recipes);
+                                for (int i = 0; i < recipes.Count; i++)
+                                {
+                                    Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
+                                }
+                                Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
+                                recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                            }
+
                             if (recipeIndex >= 0 && recipeIndex < recipes.Count)
                             {
                                 recipes[recipeIndex].DisplayRecipe();
@@ -147,7 +161,15 @@ namespace RecipeApp
                 }
             }
         }
+
+        private static void SortRecipes(List<Recipe> recipes)
+        {
+           
+            recipes.Sort((RSAPKCS1KeyExchangeDeformatter, Rfc2898DeriveBytes) => string.Compare(RSAPKCS1KeyExchangeDeformatter.RecipeName, Rfc2898DeriveBytes.RecipeName, StringComparison.
+                OrdinalIgnoreCase));
+        }
     }
+
 
     class Recipe
     {
