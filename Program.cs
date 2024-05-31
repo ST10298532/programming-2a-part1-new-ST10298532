@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace RecipeApp
 {
@@ -164,12 +163,9 @@ namespace RecipeApp
 
         private static void SortRecipes(List<Recipe> recipes)
         {
-           
-            recipes.Sort((RSAPKCS1KeyExchangeDeformatter, Rfc2898DeriveBytes) => string.Compare(RSAPKCS1KeyExchangeDeformatter.RecipeName, Rfc2898DeriveBytes.RecipeName, StringComparison.
-                OrdinalIgnoreCase));
+            recipes.Sort((a, b) => string.Compare(a.RecipeName, b.RecipeName, StringComparison.OrdinalIgnoreCase));
         }
     }
-
 
     class Recipe
     {
@@ -179,6 +175,8 @@ namespace RecipeApp
         private string[]? Units;
         private string[]? Steps;
         private double[]? OriginalQuantities;
+        private double[]? Calories;
+        private string[]? FoodGroups;
 
         // Method to enter the recipe details
         public void EnterRecipeDetails()
@@ -192,6 +190,8 @@ namespace RecipeApp
             Ingredients = new string[numIngredients]!;
             Quantities = new double[numIngredients]!;
             Units = new string[numIngredients]!;
+            Calories = new double[numIngredients]!; // Initialize Calories array
+            FoodGroups = new string[numIngredients]!;
 
             for (int i = 0; i < numIngredients; i++)
             {
@@ -203,6 +203,12 @@ namespace RecipeApp
 
                 Console.Write("\x1b[94mEnter the unit of ingredient {0}: \x1b[0m", i + 1);
                 Units[i] = Console.ReadLine()!;
+
+                Console.Write("\x1b[94mEnter the number of calories for ingredient {0}: \x1b[0m", i + 1);
+                Calories[i] = Convert.ToDouble(Console.ReadLine());
+
+                Console.Write("\x1b[94mEnter the food group for ingredient {0}: \x1b[0m", i + 1);
+                FoodGroups[i] = Console.ReadLine()!;
             }
 
             Console.Write("\x1b[94mEnter the number of steps: \x1b[0m");
@@ -228,7 +234,7 @@ namespace RecipeApp
             Console.WriteLine("\x1b[1m\x1b[95mIngredients:\x1b[0m");
             for (int i = 0; i < Ingredients.Length; i++)
             {
-                Console.WriteLine($"\x1b[93m{Quantities[i]} {Units[i]} of {Ingredients[i]}\x1b[0m");
+                Console.WriteLine($"\x1b[93m{Quantities[i]} {Units[i]} of {Ingredients[i]} ({Calories[i]} calories) - Food Group: {FoodGroups[i]}\x1b[0m");
             }
             Console.WriteLine("\x1b[1m\x1b[95mSteps:\x1b[0m");
             for (int i = 0; i < Steps.Length; i++)
@@ -236,6 +242,27 @@ namespace RecipeApp
                 Console.WriteLine($"\x1b[93m{i + 1}. {Steps[i]}\x1b[0m");
             }
             Console.WriteLine();
+
+            // Calculate and display the total calories
+            double totalCalories = CalculateTotalCalories();
+            Console.WriteLine($"Total Calories: {totalCalories}");
+
+            // Notify if total calories exceed 300
+            if (totalCalories > 300)
+            {
+                Console.WriteLine("\x1b[91mWarning: Total calories exceed 300!\x1b[0m");
+            }
+        }
+
+        // Method to calculate the total calories of the recipe
+        private double CalculateTotalCalories()
+        {
+            double totalCalories = 0;
+            for (int i = 0; i < Ingredients.Length; i++)
+            {
+                totalCalories += Calories[i];
+            }
+            return totalCalories;
         }
 
         // Method to scale the recipe
@@ -247,10 +274,10 @@ namespace RecipeApp
             }
         }
 
-        // Method to reset the quantities to the original values
+        // Method to reset the recipe to its original quantities
         public void ResetQuantities()
         {
-            Array.Copy(OriginalQuantities, Quantities, Quantities.Length);
+            Array.Copy(OriginalQuantities, Quantities, OriginalQuantities.Length);
         }
     }
 }
