@@ -3,12 +3,16 @@ using System.Collections.Generic;
 
 namespace RecipeApp
 {
-    class Program
+    // Class representing the Recipe Application
+    class RecipeApp
     {
         static void Main(string[] args)
         {
             // Create a list to store the recipes
             List<Recipe> recipes = new List<Recipe>();
+
+            // Subscribe to the CaloriesExceededEvent
+            Recipe.CaloriesExceededEvent += Recipe_CaloriesExceededEventHandler;
 
             // Start the main program loop
             while (true)
@@ -39,113 +43,22 @@ namespace RecipeApp
                         break;
                     case 2:
                         // Display the recipes
-                        if (recipes.Count == 0)
-                        {
-                            Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
-                            Console.WriteLine("\x1b[93m0. Display recipes in alphabetical order\x1b[0m");
-                            for (int i = 0; i < recipes.Count; i++)
-                            {
-                                Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
-                            }
-                            Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
-                            int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-
-                            if (recipeIndex == -1)
-                            {
-                                SortRecipes(recipes);
-                                for (int i = 0; i < recipes.Count; i++)
-                                {
-                                    Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
-                                }
-                                Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
-                                recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                            }
-
-                            if (recipeIndex >= 0 && recipeIndex < recipes.Count)
-                            {
-                                recipes[recipeIndex].DisplayRecipe();
-                            }
-                            else
-                            {
-                                Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
-                            }
-                        }
+                        Recipe.DisplayRecipes(recipes);
                         Console.WriteLine();
                         break;
                     case 3:
                         // Scale a recipe
-                        if (recipes.Count == 0)
-                        {
-                            Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
-                            for (int i = 0; i < recipes.Count; i++)
-                            {
-                                Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
-                            }
-                            Console.Write("\x1b[94mEnter the number of the recipe you want to scale: \x1b[0m");
-                            int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                            if (recipeIndex >= 0 && recipeIndex < recipes.Count)
-                            {
-                                Console.Write("\x1b[94mEnter the scaling factor (0.5, 2, or 3): \x1b[0m");
-                                double scalingFactor = Convert.ToDouble(Console.ReadLine());
-                                recipes[recipeIndex].ScaleRecipe(scalingFactor);
-                                Console.WriteLine("\x1b[92mRecipe scaled successfully!\x1b[0m");
-                            }
-                            else
-                            {
-                                Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
-                            }
-                        }
+                        Recipe.ScaleRecipe(recipes);
                         Console.WriteLine();
                         break;
                     case 4:
                         // Reset a recipe's quantities
-                        if (recipes.Count == 0)
-                        {
-                            Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
-                            for (int i = 0; i < recipes.Count; i++)
-                            {
-                                Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
-                            }
-                            Console.Write("\x1b[94mEnter the number of the recipe you want to reset: \x1b[0m");
-                            int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                            if (recipeIndex >= 0 && recipeIndex < recipes.Count)
-                            {
-                                recipes[recipeIndex].ResetQuantities();
-                                Console.WriteLine("\x1b[92mQuantities reset successfully!\x1b[0m");
-                            }
-                            else
-                            {
-                                Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
-                            }
-                        }
+                        Recipe.ResetRecipeQuantities(recipes);
                         Console.WriteLine();
                         break;
                     case 5:
                         // Clear all recipes
-                        Console.WriteLine("\x1b[93mAre you sure you want to clear all recipes? (y/n)\x1b[0m");
-                        string confirmation = Console.ReadLine()?.ToLower();
-
-                        if (confirmation == "y")
-                        {
-                            recipes.Clear();
-                            Console.WriteLine("\x1b[92mAll recipes cleared successfully!\x1b[0m");
-                        }
-                        else
-                        {
-                            Console.WriteLine("\x1b[92mRecipe clearing cancelled.\x1b[0m");
-                        }
+                        Recipe.ClearAllRecipes(recipes);
                         Console.WriteLine();
                         break;
                     case 6:
@@ -161,22 +74,42 @@ namespace RecipeApp
             }
         }
 
-        private static void SortRecipes(List<Recipe> recipes)
+        // Event handler for when a recipe exceeds 300 calories
+        static void Recipe_CaloriesExceededEventHandler(string recipeName)
         {
-            recipes.Sort((a, b) => string.Compare(a.RecipeName, b.RecipeName, StringComparison.OrdinalIgnoreCase));
+            Console.WriteLine($"\x1b[91mWarning: Total calories for recipe '{recipeName}' exceed 300!\x1b[0m");
         }
     }
 
+    // Delegate for notifying when a recipe exceeds 300 calories
+    delegate void CaloriesExceededHandler(string recipeName);
+
+    // Class representing a Recipe
     class Recipe
     {
-        public string? RecipeName { get; set; }
-        private string[]? Ingredients;
-        private double[]? Quantities;
-        private string[]? Units;
-        private string[]? Steps;
-        private double[]? OriginalQuantities;
-        private double[]? Calories;
-        private string[]? FoodGroups;
+        public string RecipeName { get; set; }
+        public List<string> Ingredients { get; set; }
+        public List<double> Quantities { get; set; }
+        public List<string> Units { get; set; }
+        public List<string> Steps { get; set; }
+        public List<double> OriginalQuantities { get; set; }
+        public List<double> Calories { get; set; }
+        public List<string> FoodGroups { get; set; }
+
+        // Event for when a recipe exceeds 300 calories
+        public static event CaloriesExceededHandler CaloriesExceededEvent;
+
+        // Constructor
+        public Recipe()
+        {
+            Ingredients = new List<string>();
+            Quantities = new List<double>();
+            Units = new List<string>();
+            Steps = new List<string>();
+            OriginalQuantities = new List<double>();
+            Calories = new List<double>();
+            FoodGroups = new List<string>();
+        }
 
         // Method to enter the recipe details
         public void EnterRecipeDetails()
@@ -187,57 +120,48 @@ namespace RecipeApp
             Console.Write("\x1b[94mEnter the number of ingredients: \x1b[0m");
             int numIngredients = Convert.ToInt32(Console.ReadLine());
 
-            Ingredients = new string[numIngredients]!;
-            Quantities = new double[numIngredients]!;
-            Units = new string[numIngredients]!;
-            Calories = new double[numIngredients]!; // Initialize Calories array
-            FoodGroups = new string[numIngredients]!;
-
             for (int i = 0; i < numIngredients; i++)
             {
-                Console.Write("\x1b[94mEnter the name of ingredient {0}: \x1b[0m", i + 1);
-                Ingredients[i] = Console.ReadLine()!;
+                Console.Write($"\x1b[94mEnter the name of ingredient {i + 1}: \x1b[0m");
+                Ingredients.Add(Console.ReadLine());
 
-                Console.Write("\x1b[94mEnter the quantity of ingredient {0}: \x1b[0m", i + 1);
-                Quantities[i] = Convert.ToDouble(Console.ReadLine());
+                Console.Write($"\x1b[94mEnter the quantity of ingredient {i + 1}: \x1b[0m");
+                Quantities.Add(Convert.ToDouble(Console.ReadLine()));
 
-                Console.Write("\x1b[94mEnter the unit of ingredient {0}: \x1b[0m", i + 1);
-                Units[i] = Console.ReadLine()!;
+                Console.Write($"\x1b[94mEnter the unit of ingredient {i + 1}: \x1b[0m");
+                Units.Add(Console.ReadLine());
 
-                Console.Write("\x1b[94mEnter the number of calories for ingredient {0}: \x1b[0m", i + 1);
-                Calories[i] = Convert.ToDouble(Console.ReadLine());
+                Console.Write($"\x1b[94mEnter the number of calories for ingredient {i + 1}: \x1b[0m");
+                Calories.Add(Convert.ToDouble(Console.ReadLine()));
 
-                Console.Write("\x1b[94mEnter the food group for ingredient {0}: \x1b[0m", i + 1);
-                FoodGroups[i] = Console.ReadLine()!;
+                Console.Write($"\x1b[94mEnter the food group for ingredient {i + 1}: \x1b[0m");
+                FoodGroups.Add(Console.ReadLine());
             }
 
             Console.Write("\x1b[94mEnter the number of steps: \x1b[0m");
             int numSteps = Convert.ToInt32(Console.ReadLine());
 
-            Steps = new string[numSteps]!;
-
             for (int i = 0; i < numSteps; i++)
             {
-                Console.Write("\x1b[94mEnter step {0}: \x1b[0m", i + 1);
-                Steps[i] = Console.ReadLine()!;
+                Console.Write($"\x1b[94mEnter step {i + 1}: \x1b[0m");
+                Steps.Add(Console.ReadLine());
             }
 
             // Store the original quantities for reset functionality
-            OriginalQuantities = new double[Quantities.Length];
-            Array.Copy(Quantities, OriginalQuantities, Quantities.Length);
+            OriginalQuantities.AddRange(Quantities);
         }
 
         // Method to display the recipe
         public void DisplayRecipe()
         {
-            Console.WriteLine("\x1b[1m\x1b[95m{0}\x1b[0m", RecipeName);
+            Console.WriteLine($"\x1b[1m\x1b[95m{RecipeName}\x1b[0m");
             Console.WriteLine("\x1b[1m\x1b[95mIngredients:\x1b[0m");
-            for (int i = 0; i < Ingredients.Length; i++)
+            for (int i = 0; i < Ingredients.Count; i++)
             {
                 Console.WriteLine($"\x1b[93m{Quantities[i]} {Units[i]} of {Ingredients[i]} ({Calories[i]} calories) - Food Group: {FoodGroups[i]}\x1b[0m");
             }
             Console.WriteLine("\x1b[1m\x1b[95mSteps:\x1b[0m");
-            for (int i = 0; i < Steps.Length; i++)
+            for (int i = 0; i < Steps.Count; i++)
             {
                 Console.WriteLine($"\x1b[93m{i + 1}. {Steps[i]}\x1b[0m");
             }
@@ -250,7 +174,7 @@ namespace RecipeApp
             // Notify if total calories exceed 300
             if (totalCalories > 300)
             {
-                Console.WriteLine("\x1b[91mWarning: Total calories exceed 300!\x1b[0m");
+                CaloriesExceededEvent?.Invoke(RecipeName);
             }
         }
 
@@ -258,7 +182,7 @@ namespace RecipeApp
         private double CalculateTotalCalories()
         {
             double totalCalories = 0;
-            for (int i = 0; i < Ingredients.Length; i++)
+            for (int i = 0; i < Ingredients.Count; i++)
             {
                 totalCalories += Calories[i];
             }
@@ -268,7 +192,7 @@ namespace RecipeApp
         // Method to scale the recipe
         public void ScaleRecipe(double scalingFactor)
         {
-            for (int i = 0; i < Quantities.Length; i++)
+            for (int i = 0; i < Quantities.Count; i++)
             {
                 Quantities[i] *= scalingFactor;
             }
@@ -277,7 +201,129 @@ namespace RecipeApp
         // Method to reset the recipe to its original quantities
         public void ResetQuantities()
         {
-            Array.Copy(OriginalQuantities, Quantities, OriginalQuantities.Length);
+            Quantities.Clear();
+            Quantities.AddRange(OriginalQuantities);
+        }
+
+        // Method to display all recipes
+        public static void DisplayRecipes(List<Recipe> recipes)
+        {
+            if (recipes.Count == 0)
+            {
+                Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
+                Console.WriteLine("\x1b[93m0. Display recipes in alphabetical order\x1b[0m");
+                for (int i = 0; i < recipes.Count; i++)
+                {
+                    Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
+                }
+                Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
+                int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                if (recipeIndex == -1)
+                {
+                    SortRecipes(recipes);
+                    for (int i = 0; i < recipes.Count; i++)
+                    {
+                        Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
+                    }
+                    Console.Write("\x1b[94mEnter the number of the recipe you want to display: \x1b[0m");
+                    recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                }
+
+                if (recipeIndex >= 0 && recipeIndex < recipes.Count)
+                {
+                    recipes[recipeIndex].DisplayRecipe();
+                }
+                else
+                {
+                    Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
+                }
+            }
+        }
+
+        // Method to sort recipes alphabetically
+        private static void SortRecipes(List<Recipe> recipes)
+        {
+            recipes.Sort((a, b) => string.Compare(a.RecipeName, b.RecipeName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Method to scale a recipe
+        public static void ScaleRecipe(List<Recipe> recipes)
+        {
+            if (recipes.Count == 0)
+            {
+                Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
+                for (int i = 0; i < recipes.Count; i++)
+                {
+                    Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
+                }
+                Console.Write("\x1b[94mEnter the number of the recipe you want to scale: \x1b[0m");
+                int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                if (recipeIndex >= 0 && recipeIndex < recipes.Count)
+                {
+                    Console.Write("\x1b[94mEnter the scaling factor (0.5, 2, or 3): \x1b[0m");
+                    double scalingFactor = Convert.ToDouble(Console.ReadLine());
+                    recipes[recipeIndex].ScaleRecipe(scalingFactor);
+                    Console.WriteLine("\x1b[92mRecipe scaled successfully!\x1b[0m");
+                }
+                else
+                {
+                    Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
+                }
+            }
+        }
+
+        // Method to reset a recipe's quantities
+        public static void ResetRecipeQuantities(List<Recipe> recipes)
+        {
+            if (recipes.Count == 0)
+            {
+                Console.WriteLine("\x1b[91mNo recipes available.\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine("\x1b[1m\x1b[95mRecipes:\x1b[0m");
+                for (int i = 0; i < recipes.Count; i++)
+                {
+                    Console.WriteLine($"\x1b[93m{i + 1}. {recipes[i].RecipeName}\x1b[0m");
+                }
+                Console.Write("\x1b[94mEnter the number of the recipe you want to reset: \x1b[0m");
+                int recipeIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+                if (recipeIndex >= 0 && recipeIndex < recipes.Count)
+                {
+                    recipes[recipeIndex].ResetQuantities();
+                    Console.WriteLine("\x1b[92mQuantities reset successfully!\x1b[0m");
+                }
+                else
+                {
+                    Console.WriteLine("\x1b[91mInvalid recipe number.\x1b[0m");
+                }
+            }
+        }
+
+        // Method to clear all recipes
+        public static void ClearAllRecipes(List<Recipe> recipes)
+        {
+            Console.WriteLine("\x1b[93mAre you sure you want to clear all recipes? (y/n)\x1b[0m");
+            string confirmation = Console.ReadLine()?.ToLower();
+
+            if (confirmation == "y")
+            {
+                recipes.Clear();
+                Console.WriteLine("\x1b[92mAll recipes cleared successfully!\x1b[0m");
+            }
+            else
+            {
+                Console.WriteLine("\x1b[92mRecipe clearing cancelled.\x1b[0m");
+            }
         }
     }
 }
