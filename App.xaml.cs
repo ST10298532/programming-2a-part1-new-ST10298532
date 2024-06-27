@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace RecipeApp4Wpf
+namespace RecipeAppWPF
 {
     /// <summary>
     /// Interaction logic for App.xaml

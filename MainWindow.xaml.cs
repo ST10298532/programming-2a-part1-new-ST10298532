@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 
-namespace RecipeApp
+namespace RecipeAppWPF
 {
     public partial class MainWindow : Window
     {
@@ -13,87 +12,62 @@ namespace RecipeApp
             InitializeComponent();
         }
 
-        // Event handlers for menu options
-        private void EnterNewRecipe_Click(object sender, RoutedEventArgs e)
+        private void AddRecipe_Click(object sender, RoutedEventArgs e)
         {
-            EnterRecipeWindow enterRecipeWindow = new EnterRecipeWindow();
-            enterRecipeWindow.Owner = this;
-            enterRecipeWindow.ShowDialog();
-            if (enterRecipeWindow.DialogResult == true)
-            {
-                recipes.Add(enterRecipeWindow.NewRecipe);
-            }
+            // Logic to add a new recipe
+            var newRecipeWindow = new AddRecipeWindow(recipes);
+            newRecipeWindow.ShowDialog();
+            UpdateRecipeList();
         }
 
         private void DisplayRecipes_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new DisplayRecipesPage(recipes);
+            // Logic to display all recipes
+            UpdateRecipeList();
         }
 
         private void ScaleRecipe_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new ScaleRecipePage(recipes);
+            // Logic to scale a recipe
+            var scaleRecipeWindow = new ScaleRecipeWindow(recipes);
+            scaleRecipeWindow.ShowDialog();
+            UpdateRecipeList();
         }
 
-        private void ResetRecipeQuantities_Click(object sender, RoutedEventArgs e)
+        private void ResetRecipe_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new ResetRecipeQuantitiesPage(recipes);
+            // Logic to reset recipe quantities
+            var resetRecipeWindow = new ResetQuantitiesWindow(recipes);
+            resetRecipeWindow.ShowDialog();
+            UpdateRecipeList();
         }
 
-        private void ClearAllRecipes_Click(object sender, RoutedEventArgs e)
+        private void ClearRecipes_Click(object sender, RoutedEventArgs e)
         {
             recipes.Clear();
-            MessageBox.Show("All recipes cleared successfully!", "Recipe App", MessageBoxButton.OK, MessageBoxImage.Information);
-            MainContent.Content = null;
+            UpdateRecipeList();
         }
 
-        private void GenerateMenuPieChart_Click(object sender, RoutedEventArgs e)
+        private void FilterRecipes_Click(object sender, RoutedEventArgs e)
         {
-            // Assuming you have a method to select multiple recipes and calculate food group percentages
-            var selectedRecipes = recipes.Where(r => r.IsSelectedForMenu).ToList();
-            if (selectedRecipes.Count > 0)
+            var filterRecipesWindow = new FilterRecipesWindow(recipes);
+            if (filterRecipesWindow.ShowDialog() == true)
             {
-                // Calculate percentages and display pie chart
-                List<(string FoodGroup, double Percentage)> percentages = CalculateFoodGroupPercentages(selectedRecipes);
-                MainContent.Content = new MenuPieChartPage(percentages);
-            }
-            else
-            {
-                MessageBox.Show("No recipes selected for menu.", "Recipe App", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private List<(string, double)> CalculateFoodGroupPercentages(List<Recipe> selectedRecipes)
-        {
-            // Calculate percentages here based on selected recipes
-            // Example calculation, adjust as per your actual logic
-            Dictionary<string, double> groupTotals = new Dictionary<string, double>();
-            double totalCalories = 0;
-
-            foreach (var recipe in selectedRecipes)
-            {
-                foreach (var foodGroup in recipe.FoodGroups)
+                RecipesListBox.Items.Clear();
+                foreach (var recipe in filterRecipesWindow.FilteredRecipes)
                 {
-                    if (groupTotals.ContainsKey(foodGroup))
-                    {
-                        groupTotals[foodGroup] += recipe.CalculateTotalCalories();
-                    }
-                    else
-                    {
-                        groupTotals[foodGroup] = recipe.CalculateTotalCalories();
-                    }
-                    totalCalories += recipe.CalculateTotalCalories();
+                    RecipesListBox.Items.Add(recipe.RecipeName);
                 }
             }
+        }
 
-            List<(string, double)> percentages = new List<(string, double)>();
-            foreach (var group in groupTotals)
+        private void UpdateRecipeList()
+        {
+            RecipesListBox.Items.Clear();
+            foreach (var recipe in recipes)
             {
-                double percentage = (group.Value / totalCalories) * 100;
-                percentages.Add((group.Key, percentage));
+                RecipesListBox.Items.Add(recipe.RecipeName);
             }
-
-            return percentages;
         }
     }
 }
