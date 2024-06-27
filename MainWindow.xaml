@@ -1,0 +1,29 @@
+﻿<Window x:Class="RecipeApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Recipe Application" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Define rows as needed -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header and Menu Options -->
+        <Border Background="LightGray" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Enter a New Recipe" Click="EnterNewRecipe_Click"/>
+                <Button Content="Display Recipes" Click="DisplayRecipes_Click"/>
+                <Button Content="Scale a Recipe" Click="ScaleRecipe_Click"/>
+                <Button Content="Reset a Recipe's Quantities" Click="ResetRecipeQuantities_Click"/>
+                <Button Content="Clear All Recipes" Click="ClearAllRecipes_Click"/>
+                <Button Content="Generate Menu Pie Chart" Click="GenerateMenuPieChart_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area for Recipes or Pie Chart -->
+        <Border Grid.Row="1">
+            <ContentControl x:Name="MainContent"/>
+        </Border>
+    </Grid>
+</Window>
