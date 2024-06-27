@@ -65,7 +65,7 @@ To run the Recipe App, you need to have the following installed on your system:
 -.NET Core SDK
 
 ### Running the Application
-1. Clone this [Repository](https://github.com/ST10298532/programming-2a-part1-new-ST10298532) to your local machine or download the source code as a ZIP file.
+1. Clone this [Repository](https://github.com/ST10298532/programming-2a-part1-new-ST10298532.git) to your local machine or download the source code as a ZIP file.
 2. Open a command prompt or terminal and navigate to the project directory.
 3. Run the following command to build the application:
 dotnet build
